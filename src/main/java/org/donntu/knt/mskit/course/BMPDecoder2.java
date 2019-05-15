@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-public class BMPDecoder {
+public class BMPDecoder2 {
     private InputStream is;
     private int curPos = 0;
 
