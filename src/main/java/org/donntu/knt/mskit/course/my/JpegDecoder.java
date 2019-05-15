@@ -19,12 +19,10 @@ public class JpegDecoder {
                 byte[] bytes = readBytes(file, 2); // file start
                 checkMarkerEquals(bytesToHex(bytes), FILE_START_MARKER);
 
-                bytes = readBytes(file, 2); // comment start
-                hexTemp = bytesToHex(bytes);
-
+                skip(file, 2); // comment start
 
                 bytes = readBytes(file, 2); // comment length
-                int commentLength = ByteBuffer.wrap(bytes).getInt() - 2;
+                int commentLength = ByteBuffer.wrap(bytes).getShort() - 2;
 
                 if (commentLength > 0) {
                     bytes = readBytes(file, commentLength); //comment
@@ -36,11 +34,11 @@ public class JpegDecoder {
                 checkMarkerEquals(bytesToHex(bytes), QUANT_START_MARKER);
 
                 bytes = readBytes(file, 2); // quant length
-                int quantLength = ByteBuffer.wrap(bytes).getInt();
+                int quantLength = ByteBuffer.wrap(bytes).getShort();
                 skip(file, 1);
 
                 bytes = readBytes(file, quantLength); //quants
-
+                createQuantizationTable(bytes);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -70,7 +68,7 @@ public class JpegDecoder {
     }
 
     public static byte[][] createQuantizationTable(byte[] bytes) {
-        int tableSize = 4;
+        int tableSize = 8;
         byte[][] table = new byte[tableSize][tableSize];
         int k = 0;
         int i = 0;
