@@ -1,25 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.donntu.knt.mskit.course.mike;
+
+import lombok.Data;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Mike
- */
-public class BitmapUtil
-{
+@Data
+public class BitmapUtil {
     private char[] header = new char[2];
     private byte[] head = new byte[2];
     private int size;
@@ -40,11 +32,11 @@ public class BitmapUtil
     private int padding;
     private int[] pixels;
     private BufferedImage image;
-    public BitmapUtil()
-    {
+
+    /*public BitmapUtil() {
     }
-    public BitmapUtil(BitmapUtil pic)
-    {
+
+    public BitmapUtil(BitmapUtil pic) {
         header = pic.header;
         head = pic.head;
         size = pic.size;
@@ -65,27 +57,19 @@ public class BitmapUtil
         padding = pic.padding;
         pixels = pic.pixels;
         image = new BufferedImage(bitmapWidth, bitmapHeight, BufferedImage.TYPE_INT_RGB);
-        for (int x = 0; x < bitmapHeight; x++)
-        {
-            for (int y = 0; y < bitmapWidth; y++)
-            {
-                pixels[x * bitmapWidth + y] = pic.pixels[x * bitmapWidth + y];
-            }
+        for (int x = 0; x < bitmapHeight; x++) {
+            if (bitmapWidth >= 0)
+                System.arraycopy(pic.pixels, x * bitmapWidth, pixels, x * bitmapWidth, bitmapWidth);
         }
-        for (int x = 0; x < bitmapWidth; x++)
-        {
-            for (int y = 0; y < bitmapHeight; y++)
-            {
+        for (int x = 0; x < bitmapWidth; x++) {
+            for (int y = 0; y < bitmapHeight; y++) {
                 image.setRGB(x, y, pic.getPixel(x, y).getRGB());
             }
         }
-    }
-    public void loadBMP(String fileName)
-    {
-        FileInputStream fs = null;
-        try
-        {
-            fs = new FileInputStream(fileName);
+    }*/
+
+    /*public void loadBMP(String fileName) {
+        try (FileInputStream fs = new FileInputStream(fileName)) {
             int bflen = 14;
             byte[] bf = new byte[bflen];
             fs.read(bf, 0, bflen);
@@ -130,8 +114,7 @@ public class BitmapUtil
                     | (((int) bi[22] & 0xff) << 16)
                     | (((int) bi[21] & 0xff) << 8)
                     | (int) bi[20] & 0xff;
-            if (getImageSize() == 0)
-            {
+            if (getImageSize() == 0) {
                 imageSize = 3 * getBitmapWidth() + getBitmapWidth() % 4;
                 imageSize = getImageSize() * getBitmapHeight();
             }
@@ -151,170 +134,85 @@ public class BitmapUtil
                     | (((int) bi[38] & 0xff) << 16)
                     | (((int) bi[37] & 0xff) << 8)
                     | (int) bi[36] & 0xff;
-            if (numBitsPixel == 24)
-            {
+            if (numBitsPixel == 24) {
                 padding = (getImageSize() / getBitmapHeight()) - getBitmapWidth() * 3;
                 pixels = new int[getBitmapHeight() * getBitmapWidth()];
-                byte brgb[] = new byte[(getBitmapWidth() + getPadding()) * 3 * getBitmapHeight()];
+                byte[] brgb = new byte[(getBitmapWidth() + getPadding()) * 3 * getBitmapHeight()];
                 fs.read(brgb, 0, (getBitmapWidth() + getPadding()) * 3 * getBitmapHeight());
                 int nindex = 0;
-                for (int j = 0; j < getBitmapHeight(); j++)
-                {
-                    for (int i = 0; i < getBitmapWidth(); i++)
-                    {
-                        int a = (255 & 0xff) << 24;
+                for (int j = 0; j < getBitmapHeight(); j++) {
+                    for (int i = 0; i < getBitmapWidth(); i++) {
+                        int a = (0xff) << 24;
                         int r = (((int) brgb[nindex + 2] & 0xff) << 16);
                         int g = (((int) brgb[nindex + 1] & 0xff) << 8);
                         int b = (int) brgb[nindex] & 0xff;
-                        pixels[getBitmapWidth() * (getBitmapHeight() - j - 1) + i] = (int) (a + b + g + r);
+                        pixels[getBitmapWidth() * (getBitmapHeight() - j - 1) + i] = a + b + g + r;
                         nindex += 3;
                     }
                     nindex += getPadding();
                 }
-                Toolkit tk = Toolkit.getDefaultToolkit();
-                Image images = tk.createImage(new MemoryImageSource(getBitmapWidth(), getBitmapHeight(), pixels, 0, getBitmapWidth()));
-                this.image = new BufferedImage(getBitmapWidth(), getBitmapHeight(), BufferedImage.TYPE_INT_RGB);
-                Graphics2D g2 = this.image.createGraphics();
-                g2.drawImage(images, 0, 0, null);
-                g2.dispose();
-            }
-            if (numBitsPixel == 32)
-            {
+            } else if (numBitsPixel == 32) {
                 padding = 0;
                 pixels = new int[getBitmapHeight() * getBitmapWidth()];
-                byte brgb[] = new byte[getBitmapWidth() * 4 * getBitmapHeight()];
+                byte[] brgb = new byte[getBitmapWidth() * 4 * getBitmapHeight()];
                 fs.read(brgb, 0, getBitmapWidth() * 4 * getBitmapHeight());
                 int nindex = 0;
-                for (int j = 0; j < getBitmapHeight(); j++)
-                {
-                    for (int i = 0; i < getBitmapWidth(); i++)
-                    {
+                for (int j = 0; j < getBitmapHeight(); j++) {
+                    for (int i = 0; i < getBitmapWidth(); i++) {
                         pixels[getBitmapWidth() * (getBitmapHeight() - j - 1) + i] =
                                 (((int) brgb[nindex + 3] & 0xff) << 24)
-                                | (((int) brgb[nindex + 2] & 0xff) << 16)
-                                | (((int) brgb[nindex + 1] & 0xff) << 8)
-                                | (int) brgb[nindex] & 0xff;
+                                        | (((int) brgb[nindex + 2] & 0xff) << 16)
+                                        | (((int) brgb[nindex + 1] & 0xff) << 8)
+                                        | (int) brgb[nindex] & 0xff;
                         nindex += 4;
                     }
                 }
-                Toolkit tk = Toolkit.getDefaultToolkit();
-                Image images = tk.createImage(new MemoryImageSource(getBitmapWidth(), getBitmapHeight(), pixels, 0, getBitmapWidth()));
-                image = new BufferedImage(getBitmapWidth(), getBitmapHeight(), BufferedImage.TYPE_INT_RGB);
-                Graphics2D g2 = this.image.createGraphics();
-                g2.drawImage(images, 0, 0, null);
-                g2.dispose();
             }
-            fs.close();
-        }
-        catch (IOException ex)
-        {
+            Toolkit tk = Toolkit.getDefaultToolkit();
+            Image images = tk.createImage(new MemoryImageSource(getBitmapWidth(), getBitmapHeight(), pixels, 0, getBitmapWidth()));
+            this.image = new BufferedImage(getBitmapWidth(), getBitmapHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = this.image.createGraphics();
+            g2.drawImage(images, 0, 0, null);
+            g2.dispose();
+        } catch (IOException ex) {
             Logger.getLogger(BitmapUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
-    public void printBMPHeader()
-    {
-        System.out.println("=============================");
-        System.out.println("Новое изображение:");
-        System.out.println("Header Field: " + header[0] + header[1]);
-        System.out.println("Size of BMP File: " + size);
-        System.out.println("Reserved(First): " + reserved1);
-        System.out.println("Reserved(Second): " + reserved2);
-        System.out.println("Offset: " + offset);
-        System.out.println("Size of the header: " + headerSize);
-        System.out.println("Bitmap width: " + getBitmapWidth());
-        System.out.println("Bitmap height: " + getBitmapHeight());
-        System.out.println("Number Of Color Planes: " + numColorPlanes);
-        System.out.println("Number of bits per pixel: " + numBitsPixel);
-        System.out.println("Compression Method: " + compressionMethod);
-        System.out.println("Image Size: " + getImageSize());
-        System.out.println("Horizontal Resolution of Image: " + horRes);
-        System.out.println("Vertical Resolution of Image: " + vertRes);
-        System.out.println("Number of colors in Color Palette: " + numColorPalette);
-        System.out.println("Number of Important Colors used: " + numImportantColors);
-    }
-    /**
-     * @return the pixels
-     */
-    public int[] getPixels()
-    {
-        return pixels;
-    }
-    /**
-     * @return the bitmapWidth
-     */
-    public int getBitmapWidth()
-    {
-        return bitmapWidth;
-    }
-    /**
-     * @return the bitmapHeight
-     */
-    public int getBitmapHeight()
-    {
-        return bitmapHeight;
-    }
-    /**
-     * @return the padding
-     */
-    public int getPadding()
-    {
-        return padding;
-    }
-    /**
-     * @return the imageSize
-     */
-    public int getImageSize()
-    {
-        return imageSize;
-    }
-    /**
-     * @return the image
-     */
-    public BufferedImage getImage()
-    {
-        return image;
-    }
-    public Color getPixel(int x, int y)
-    {
-        if (x < 0 || x >= bitmapWidth)
-        {
+*/
+    public Color getPixel(int x, int y) {
+        if (x < 0 || x >= bitmapWidth) {
             throw new IndexOutOfBoundsException("x must be between 0 and " + (bitmapWidth - 1));
         }
-        if (y < 0 || y >= bitmapHeight)
-        {
+        if (y < 0 || y >= bitmapHeight) {
             throw new IndexOutOfBoundsException("y must be between 0 and " + (bitmapHeight - 1));
         }
         return new Color(image.getRGB(x, y));
     }
-    public void setPixel(int x, int y, Color color)
-    {
-        if (x < 0 || x >= bitmapWidth)
-        {
+
+    public void setPixel(int x, int y, Color color) {
+        if (x < 0 || x >= bitmapWidth) {
             throw new IndexOutOfBoundsException("x must be between 0 and " + (bitmapWidth - 1));
         }
-        if (y < 0 || y >= bitmapHeight)
-        {
+        if (y < 0 || y >= bitmapHeight) {
             throw new IndexOutOfBoundsException("y must be between 0 and " + (bitmapHeight - 1));
         }
-        if (color == null)
-        {
+        if (color == null) {
             throw new NullPointerException("can't set Color to null");
         }
         image.setRGB(x, y, color.getRGB());
     }
-    public double getLuminance(int x, int y)
-    {
+
+    public double getLuminance(int x, int y) {
         Color color = getPixel(x, y);
         int r = color.getRed();
         int g = color.getGreen();
         int b = color.getBlue();
         return .299 * r + .587 * g + .114 * b;
     }
-    public void saveToFile(String file)
-    {
-        try
-        {
-            FileOutputStream fo = new FileOutputStream(file);
+
+    public void saveToFile(String file) {
+        try (FileOutputStream fo = new FileOutputStream(file)) {
             fo.write(head);
             fo.write(intToDWord(size));
             fo.write(intToWord(reserved1));
@@ -332,95 +230,78 @@ public class BitmapUtil
             fo.write(intToDWord(numColorPalette));
             fo.write(intToDWord(numImportantColors));
             writeBitmap(fo);
-            fo.close();
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             Logger.getLogger(BitmapUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    private byte[] intToWord(int parValue)
-    {
-        byte retValue[] = new byte[2];
+
+    private byte[] intToWord(int parValue) {
+        byte[] retValue = new byte[2];
         retValue[0] = (byte) (parValue & 0xFF);
         retValue[1] = (byte) ((parValue >> 8) & 0xFF);
         return (retValue);
     }
-    private byte[] intToDWord(int parValue)
-    {
-        byte retValue[] = new byte[4];
+
+    private byte[] intToDWord(int parValue) {
+        byte[] retValue = new byte[4];
         retValue[0] = (byte) (parValue & 0xFF);
         retValue[1] = (byte) ((parValue >> 8) & 0xFF);
         retValue[2] = (byte) ((parValue >> 16) & 0xFF);
         retValue[3] = (byte) ((parValue >> 24) & 0xFF);
         return (retValue);
     }
-    private boolean convertImage()
-    {
+
+    private boolean convertImage() {
         PixelGrabber pg = new PixelGrabber(image, 0, 0, bitmapWidth, bitmapHeight,
                 pixels, 0, bitmapWidth);
-        try
-        {
+        try {
             pg.grabPixels();
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
             return (false);
         }
         return (true);
     }
-    private void writeBitmap(FileOutputStream fo)
-    {
+
+    private void writeBitmap(FileOutputStream fo) {
         convertImage();
         int value;
         int pad;
         byte[] rgb;
-        if (numBitsPixel == 24)
-        {
+        if (numBitsPixel == 24) {
             pad = 4 - ((bitmapWidth * 3) % 4);
             rgb = new byte[3];
-        }
-        else
-        {
+        } else {
             rgb = new byte[4];
             pad = 4 - ((bitmapWidth) % 4);
         }
-        if (pad == 4)
-        {
+        if (pad == 4) {
             pad = 0;
         }
-        try
-        {
-            for (int row = bitmapHeight; row > 0; row--)
-            {
-                for (int col = 0; col < bitmapWidth; col++)
-                {
+        try {
+            for (int row = bitmapHeight; row > 0; row--) {
+                for (int col = 0; col < bitmapWidth; col++) {
                     value = pixels[(row - 1) * bitmapWidth + col];
-                    if (numBitsPixel == 24)
-                    {
+                    if (numBitsPixel == 24) {
                         rgb[0] = (byte) (value & 0xFF);
                         rgb[1] = (byte) ((value >> 8) & 0xFF);
                         rgb[2] = (byte) ((value >> 16) & 0xFF);
                     }
-                    if (numBitsPixel == 32)
-                    {
+                    if (numBitsPixel == 32) {
                         rgb[0] = (byte) (value & 0xFF);
                         rgb[1] = (byte) ((value >> 8) & 0xFF);
                         rgb[2] = (byte) ((value >> 16) & 0xFF);
                         rgb[3] = (byte) ((value >> 24) & 0xFF);
                     }
                     fo.write(rgb);
-                    for (int i = 1; i <= pad; i++)
-                    {
+                    for (int i = 1; i <= pad; i++) {
                         fo.write(0x00);
                     }
                 }
             }
-        }
-        catch (Exception wb)
-        {
+        } catch (Exception wb) {
             wb.printStackTrace();
         }
     }
 }
+
