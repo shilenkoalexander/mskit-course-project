@@ -59,11 +59,13 @@ public class JpegDecoder {
                     inverseDCTAll(holder, segmentHolder.sofSegment.getComponentCount());
                     merger.merge(holder);
                 }
-            } catch (IllegalStateException e) {
-                //end
-            }
+            } catch (IllegalStateException ignored) { }
 
-            return makeImageFromRGBMatrix(merger.getFullBlock(), segmentHolder.sofSegment.getWidth(), segmentHolder.sofSegment.getHeight());
+            return makeImageFromRGBMatrix(
+                    merger.getFullBlock(),
+                    segmentHolder.sofSegment.getWidth(),
+                    segmentHolder.sofSegment.getHeight()
+            );
         }
 
     }
@@ -101,79 +103,67 @@ public class JpegDecoder {
     private static SegmentHolder readAllSegments(JpegInputStream jis) throws IOException {
         SegmentHolder segmentHolder = new SegmentHolder();
 
-        //while we din't find real jpeg image data
         while (segmentHolder.sosSegment == null) {
             int marker = jis.readShort();
 
             switch (marker) {
-                case SOI :
-                    //System.out.println("SOI");
+                case SOI:
                     break;
 
-                case SOF0 :
-                    //System.out.println("SOF0");
+                case SOF0:
                     segmentHolder.sofSegment = SOFSegment.decode(jis);
                     break;
 
-                case SOF1 :
-                case SOF2 :
+                case SOF1:
+                case SOF2:
 
-                case DRI :
+                case DRI:
 
-                case COM :
+                case COM:
 
-                case RST0 :
-                case RST1 :
-                case RST2 :
-                case RST3 :
-                case RST4 :
-                case RST5 :
-                case RST6 :
-                case RST7 :
+                case RST0:
+                case RST1:
+                case RST2:
+                case RST3:
+                case RST4:
+                case RST5:
+                case RST6:
+                case RST7:
 
-                case APP0 :
-                case APP1 :
-                case APP2 :
-                case APP3 :
-                case APP4 :
-                case APP5 :
-                case APP6 :
-                case APP7 :
-                case APP8 :
-                case APP9 :
-                case APPA :
-                case APPB :
-                case APPC :
-                case APPD :
-                case APPE :
-                case APPF :
-                    //System.out.println("COM");
-                    //System.out.println("DRI");
-                    //System.out.println("SOF1");
+                case APP0:
+                case APP1:
+                case APP2:
+                case APP3:
+                case APP4:
+                case APP5:
+                case APP6:
+                case APP7:
+                case APP8:
+                case APP9:
+                case APPA:
+                case APPB:
+                case APPC:
+                case APPD:
+                case APPE:
+                case APPF:
                     jis.skip(jis.readSize());
                     break;
-
-                case DHT :
-                    //System.out.println("DHT");
+                case DHT:
                     DHTTable dhtTable = DHTSegment.decode(jis);
                     segmentHolder.dhtSegment.add(dhtTable);
                     break;
 
-                case DQT :
-                    //System.out.println("DQT");
+                case DQT:
                     DQTTable dqtTable = DQTSegment.decode(jis);
                     segmentHolder.dqtSegment.add(dqtTable);
                     break;
 
-                case SOS :
-                    //System.out.println("SOS");
+                case SOS:
                     segmentHolder.sosSegment = SOSSegment.decode(jis);
                     break;
-
-                case EOI :
-                    //System.out.println("EOI");
+                case EOI:
                     break;
-                default :
+                default:
                     System.out.println("Should be never reached.");
                     break;
             }
@@ -182,13 +172,10 @@ public class JpegDecoder {
         return segmentHolder;
     }
 
-
     public static BufferedImage makeImageFromRGBMatrix(int[] rgbMatrix, int width, int height) {
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         final int[] a = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
         System.arraycopy(rgbMatrix, 0, a, 0, rgbMatrix.length);
         return bi;
     }
-
-
 }
