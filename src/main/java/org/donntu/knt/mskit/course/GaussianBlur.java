@@ -1,9 +1,10 @@
 package org.donntu.knt.mskit.course;
 
+import java.awt.*;
+
 import static java.lang.Math.*;
 
 public class GaussianBlur {
-    private static double NORMING_FACTOR = 1;
 
     public static int[][] blur(int[][] pixels, int radius, double sigma) {
         int normalHeight = pixels.length;
@@ -12,11 +13,17 @@ public class GaussianBlur {
 
         double[][] blurMatrix = getMatrixByGaussian(radius, sigma);
 
-        int sideSizeExtension = radius / 2;
+        int sideSizeExtension = (int) Math.ceil(radius / 2);
         int[][] extendMatrix = extendMatrix(pixels, sideSizeExtension);
         for (int i = 0; i < normalHeight; i++) {
             for (int j = 0; j < normalWidth; j++) {
-                newPixels[i][j] = (int) getBlurredPixel(extendMatrix, blurMatrix, i + sideSizeExtension, j + sideSizeExtension, radius);
+                newPixels[i][j] = (int) getBlurredPixel(
+                        extendMatrix,
+                        blurMatrix,
+                        i + sideSizeExtension,
+                        j + sideSizeExtension,
+                        radius
+                );
             }
         }
 
@@ -24,14 +31,20 @@ public class GaussianBlur {
     }
 
     private static double getBlurredPixel(int[][] extendMatrix, double[][] blurMatrix, int i, int j, int radius) {
-        int half = radius / 2;
-        double sum = 0;
+        int half = (int) Math.ceil(radius / 2);
+        double sumR = 0;
+        double sumG = 0;
+        double sumB = 0;
         for (int k = i - half, p = 0; k < i + half; k++, p++) {
             for (int l = j - half, m = 0; l < j + half; l++, m++) {
-                sum += (extendMatrix[k][l] * blurMatrix[p][m]) / NORMING_FACTOR;
+                Color color = new Color(extendMatrix[k][l]);
+                sumR += (color.getRed() * blurMatrix[p][m]);
+                sumG += (color.getGreen() * blurMatrix[p][m]);
+                sumB += (color.getBlue() * blurMatrix[p][m]);
             }
         }
-        return sum;
+
+        return new Color((int)(sumR), (int)(sumG), (int)(sumB)).getRGB();
     }
 
     private static int[][] extendMatrix(int[][] matrix, int sideSizeExtension) {
@@ -72,7 +85,7 @@ public class GaussianBlur {
             for (int j = 0; j < size; j++) {
                 blurMatrix[i][j] = getGaussianValue(i - half, j - half, sigma);
                 sum += blurMatrix[i][j];
-                System.out.printf("%3.2f ", blurMatrix[i][j]);
+                System.out.printf("%4.3f ", blurMatrix[i][j]);
             }
             System.out.println();
         }

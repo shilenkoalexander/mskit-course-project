@@ -12,11 +12,14 @@ public class Main {
 
         BufferedImage decode = JpegDecoder.decode(new File("files/p.jpg").toPath());
         int[][] pixels = ImageUtils.convertToPixels(decode);
-        BitmapU bitmapU = new BitmapU();
-        bitmapU.saveBitmap("files/new_pinya.bmp", decode, decode.getWidth(), decode.getHeight());
+        //BitmapU bitmapU = new BitmapU();
+        //bitmapU.saveBitmap("files/new_pinya.bmp", decode, decode.getWidth(), decode.getHeight());
 
-        int[][] blurred = GaussianBlur.blur(pixels, 20, 0.4);
-
+        /*for (int i = 3; i < 20; i++) {
+            int[][] blurred = GaussianBlur.blur(pixels, 5, 2);
+            ImageIO.write(ImageUtils.convertToBI(blurred), "bmp", new File("files/blur/blurred" + i + ".bmp"));
+        }*/
+        int[][] blurred = GaussianBlur.blur(pixels, 20, 1.5);
         ImageIO.write(ImageUtils.convertToBI(blurred), "bmp", new File("files/blurred.bmp"));
     }
 
