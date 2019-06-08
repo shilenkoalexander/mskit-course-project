@@ -1,37 +1,102 @@
 package org.donntu.knt.mskit.course;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.pow;
+import static java.lang.Math.*;
 
 public class GaussianBlur {
-    public static int[][] blur(int[][] pixels, int blurMatrixSize) {
-        double[][] blurMatrix = getMatrixByGaussian(blurMatrixSize);
-        return null;
+    private static double NORMING_FACTOR = 1;
+
+    public static int[][] blur(int[][] pixels, int radius, double sigma) {
+        int normalHeight = pixels.length;
+        int normalWidth = pixels[0].length;
+        int[][] newPixels = new int[normalHeight][normalWidth];
+
+        double[][] blurMatrix = getMatrixByGaussian(radius, sigma);
+
+        int sideSizeExtension = radius / 2;
+        int[][] extendMatrix = extendMatrix(pixels, sideSizeExtension);
+        for (int i = 0; i < normalHeight; i++) {
+            for (int j = 0; j < normalWidth; j++) {
+                newPixels[i][j] = (int) getBlurredPixel(extendMatrix, blurMatrix, i + sideSizeExtension, j + sideSizeExtension, radius);
+            }
+        }
+
+        return newPixels;
     }
 
-    private static double[][] getMatrixByGaussian(int size) {
+    private static double getBlurredPixel(int[][] extendMatrix, double[][] blurMatrix, int i, int j, int radius) {
+        int half = radius / 2;
+        double sum = 0;
+        for (int k = i - half, p = 0; k < i + half; k++, p++) {
+            for (int l = j - half, m = 0; l < j + half; l++, m++) {
+                sum += (extendMatrix[k][l] * blurMatrix[p][m]) / NORMING_FACTOR;
+            }
+        }
+        return sum;
+    }
+
+    private static int[][] extendMatrix(int[][] matrix, int sideSizeExtension) {
+        int matrixHeight = matrix.length;
+        int matrixWidth = matrix[0].length;
+        int[][] extendedMatrix = new int[matrixHeight + sideSizeExtension * 2][matrixWidth + sideSizeExtension * 2];
+        int oldI = 0;
+        int oldJ = 0;
+        for (int i = 0; i < extendedMatrix.length; i++) {
+            if(i <= sideSizeExtension){
+                oldI = 0;
+            } else if(i >= sideSizeExtension + matrixHeight) {
+                oldI = matrixHeight - 1;
+            } else {
+                oldI++;
+            }
+            for (int j = 0; j < extendedMatrix[i].length; j++) {
+                if(j <= sideSizeExtension){
+                    oldJ = 0;
+                } else if(j >= sideSizeExtension + matrixWidth) {
+                    oldJ = matrixWidth - 1;
+                } else {
+                    oldJ++;
+                }
+                extendedMatrix[i][j] = matrix[oldI][oldJ];
+
+            }
+        }
+
+        return extendedMatrix;
+    }
+
+    private static double[][] getMatrixByGaussian(int size, double sigma) {
         double[][] blurMatrix = new double[size][size];
-        double sigma = 0.3 * (size / 2.0 - 1.0) + 0.8;
         int half = size / 2;
+        double sum = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                blurMatrix[i][j] = exp(-(pow(i - half, 2) + pow(j - half, 2)) / (2.0 * sigma * sigma))
-                        / (2.0 * Math.PI * sigma * sigma);
-                System.out.printf("%8.5f ", blurMatrix[i][j]);
+                blurMatrix[i][j] = getGaussianValue(i - half, j - half, sigma);
+                sum += blurMatrix[i][j];
+                System.out.printf("%3.2f ", blurMatrix[i][j]);
             }
             System.out.println();
         }
-        /*int Half = (size * size) >> 1;
-        double[] Weights = new double[size * size];
-        //   Central weight
-        Weights[Half] = 1.0;
-        for (int Weight = 1; Weight < Half + 1; ++Weight) {
-            //   Support point
-            double x = 3.0 * (double) Weight / (double)Half;
-            //   Corresponding symmetric weights
-            Weights[Half - Weight] = Weights[Half + Weight] = exp(-x * x / 2.);
-            System.out.printf("%8.5f ", Weights[Half - Weight]);
-        }*/
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                blurMatrix[i][j] /= sum;
+            }
+        }
+
         return blurMatrix;
+    }
+
+    private static double getGaussianValue(double x, double y, double sigma) {
+        return (1.0 / (2.0 * PI * pow(sigma, 2)) * exp(-(pow(x, 2) + pow(y, 2)) / 2 * pow(sigma, 2)));
+    }
+
+    private static double multiplyMatrix(double[][] matrix1, double[][] matrix2) {
+        double sum = 0;
+        for (int i = 0; i < matrix1.length; i++) {
+            for (int j = 0; j < matrix1[i].length; j++) {
+                sum += matrix1[i][j] * matrix2[i][j];
+            }
+        }
+        return sum;
     }
 }
