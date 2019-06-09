@@ -108,6 +108,7 @@ public class JpegDecoder {
 
             switch (marker) {
                 case SOI:
+                case EOI:
                     break;
 
                 case SOF0:
@@ -160,8 +161,6 @@ public class JpegDecoder {
 
                 case SOS:
                     segmentHolder.sosSegment = SOSSegment.decode(jis);
-                    break;
-                case EOI:
                     break;
                 default:
                     System.out.println("Should be never reached.");
