@@ -1,4 +1,4 @@
-package org.donntu.knt.mskit.course;
+package org.donntu.knt.mskit.course.myfilters;
 
 import java.awt.*;
 
@@ -10,10 +10,11 @@ public class GaussianBlur {
         int normalHeight = pixels.length;
         int normalWidth = pixels[0].length;
         int[][] newPixels = new int[normalHeight][normalWidth];
+        int blurMatrixSize = 2 * radius + 1;
 
-        double[][] blurMatrix = getMatrixByGaussian(radius, sigma);
+        double[][] blurMatrix = getMatrixByGaussian(blurMatrixSize, sigma);
 
-        int sideSizeExtension = (int) Math.ceil(radius / 2);
+        int sideSizeExtension = (int) Math.ceil(blurMatrixSize / 2);
         int[][] extendMatrix = extendMatrix(pixels, sideSizeExtension);
         for (int i = 0; i < normalHeight; i++) {
             for (int j = 0; j < normalWidth; j++) {
@@ -31,12 +32,11 @@ public class GaussianBlur {
     }
 
     private static double getBlurredPixel(int[][] extendMatrix, double[][] blurMatrix, int i, int j, int radius) {
-        int half = (int) Math.ceil(radius / 2);
         double sumR = 0;
         double sumG = 0;
         double sumB = 0;
-        for (int k = i - half, p = 0; k < i + half; k++, p++) {
-            for (int l = j - half, m = 0; l < j + half; l++, m++) {
+        for (int k = i - radius, p = 0; k < i + radius; k++, p++) {
+            for (int l = j - radius, m = 0; l < j + radius; l++, m++) {
                 Color color = new Color(extendMatrix[k][l]);
                 sumR += (color.getRed() * blurMatrix[p][m]);
                 sumG += (color.getGreen() * blurMatrix[p][m]);
@@ -44,7 +44,7 @@ public class GaussianBlur {
             }
         }
 
-        return new Color((int)(sumR), (int)(sumG), (int)(sumB)).getRGB();
+        return new Color((int)Math.round(sumR), (int)Math.round(sumG), (int)Math.round(sumB)).getRGB();
     }
 
     private static int[][] extendMatrix(int[][] matrix, int sideSizeExtension) {
@@ -100,16 +100,6 @@ public class GaussianBlur {
     }
 
     private static double getGaussianValue(double x, double y, double sigma) {
-        return (1.0 / (2.0 * PI * pow(sigma, 2)) * exp(-(pow(x, 2) + pow(y, 2)) / 2 * pow(sigma, 2)));
-    }
-
-    private static double multiplyMatrix(double[][] matrix1, double[][] matrix2) {
-        double sum = 0;
-        for (int i = 0; i < matrix1.length; i++) {
-            for (int j = 0; j < matrix1[i].length; j++) {
-                sum += matrix1[i][j] * matrix2[i][j];
-            }
-        }
-        return sum;
+        return (1.0 / (2.0 * PI * pow(sigma, 2)) * exp(-(pow(x, 2) + pow(y, 2)) / (2 * pow(sigma, 2))));
     }
 }
