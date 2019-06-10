@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 public class BMPWriter {
 
     public void save(int[][] pixels, String filePath) {
-        try( LittleEndianDataOutput  out1 = new LittleEndianDataOutput(new FileOutputStream(filePath))) {
+        try (LittleEndianDataOutput out1 = new LittleEndianDataOutput(new FileOutputStream(filePath))) {
             int height = pixels.length;
             int width = pixels[0].length;
             int rowSize = (width * 3 + 3) / 4 * 4;  // 3 bytes per pixel in RGB888, round up to multiple of 4
@@ -39,9 +39,9 @@ public class BMPWriter {
             for (int y = height - 1; y >= 0; y--) {
                 for (int x = 0; x < width; x++) {
                     int color = pixels[y][x];
-                    row[x * 3] = (byte)(color);  // Blue
-                    row[x * 3 + 1] = (byte)(color >>>  8);  // Green
-                    row[x * 3 + 2] = (byte)(color >>> 16);  // Red
+                    row[x * 3] = (byte) (color);  // Blue
+                    row[x * 3 + 1] = (byte) (color >>> 8);  // Green
+                    row[x * 3 + 2] = (byte) (color >>> 16);  // Red
                 }
                 out1.writeBytes(row);
             }
