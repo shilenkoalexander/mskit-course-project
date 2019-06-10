@@ -1,9 +1,11 @@
 package org.donntu.knt.mskit.course;
 
 
+import org.donntu.knt.mskit.course.myfilters.BMPWriter;
 import org.donntu.knt.mskit.course.myfilters.Filter;
+import org.donntu.knt.mskit.course.myfilters.ImageUtils;
 import org.donntu.knt.mskit.course.myfilters.kernel.SmoothKernelValue;
-import org.donntu.knt.mskit.course.v2.ddumanskiy.JpegDecoder;
+import org.donntu.knt.mskit.course.jpegreader.JpegDecoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -26,13 +28,15 @@ public class Main {
         }*/
 
         Filter filter = new Filter();
-        int radius = 1;
+        int radius = 5;
         double sigma = 2;
 
         int[][] blurred = filter.process(pixels, radius, new SmoothKernelValue(radius));
 
         System.out.println("Blurred");
-        ImageIO.write(ImageUtils.convertToBI(blurred), "bmp", new File("files/blurred.bmp"));
+        //ImageIO.write(ImageUtils.convertToBI(blurred), "bmp", new File("files/blurred.bmp"));
+        BMPWriter bmpWriter = new BMPWriter();
+        bmpWriter.save(blurred,"files/blurred.bmp");
         System.out.println("Saved");
     }
 
