@@ -30,4 +30,20 @@ public class MatrixUtils {
 
         return extendedMatrix;
     }
+
+    public static int[][] vectorToMatrix(int[] vector, int width, int height) {
+        int[][] matrix = new int[height][width];
+        for (int i = 0; i < height; i++) {
+            System.arraycopy(vector, i * width, matrix[i], 0, width);
+        }
+        return matrix;
+    }
+
+    public static int[] matrixToVector(int[][] matrix, int width, int height) {
+        int[] vector = new int[height * width];
+        for (int i = 0; i < height; i++) {
+            System.arraycopy(matrix[i], 0, vector, i * width, width);
+        }
+        return vector;
+    }
 }

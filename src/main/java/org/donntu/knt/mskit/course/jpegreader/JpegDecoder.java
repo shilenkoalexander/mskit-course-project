@@ -9,9 +9,8 @@ import org.donntu.knt.mskit.course.jpegreader.segments.*;
 import org.donntu.knt.mskit.course.jpegreader.utils.ArraysUtil;
 import org.donntu.knt.mskit.course.jpegreader.utils.DCT;
 import org.donntu.knt.mskit.course.jpegreader.utils.JpegInputStream;
+import org.donntu.knt.mskit.course.myfilters.MatrixUtils;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +23,7 @@ import java.nio.file.Path;
  */
 public class JpegDecoder {
 
-    public static BufferedImage decode(Path jpegImageFilePath) throws IOException {
+    public static int[][] decode(Path jpegImageFilePath) throws IOException {
         //buffering full byte array for speedup.
         int fileSize = (int) Files.size(jpegImageFilePath);
 
@@ -48,17 +47,19 @@ public class JpegDecoder {
                 merger = new ColorBlockMerger(segmentHolder.sofSegment.getWidth(), segmentHolder.sofSegment.getHeight(), segmentHolder.sofSegment);
             }
 
-            try {
-                while (true) {
+
+            while (true) {
+                try {
                     huffmanDecoder.decode(holder);
                     multiplyAll(segmentHolder.dqtSegment, holder, segmentHolder.sofSegment.getComponentCount());
                     fillInZigZagOrder(holder, segmentHolder.sofSegment.getComponentCount());
                     inverseDCTAll(holder, segmentHolder.sofSegment.getComponentCount());
                     merger.merge(holder);
+                } catch (IllegalStateException e) {
+                    break;
                 }
-            } catch (IllegalStateException ignored) { }
-
-            return makeImageFromRGBMatrix(
+            }
+            return MatrixUtils.vectorToMatrix(
                     merger.getFullBlock(),
                     segmentHolder.sofSegment.getWidth(),
                     segmentHolder.sofSegment.getHeight()
@@ -166,12 +167,5 @@ public class JpegDecoder {
         }
 
         return segmentHolder;
-    }
-
-    public static BufferedImage makeImageFromRGBMatrix(int[] rgbMatrix, int width, int height) {
-        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        final int[] a = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
-        System.arraycopy(rgbMatrix, 0, a, 0, rgbMatrix.length);
-        return bi;
     }
 }

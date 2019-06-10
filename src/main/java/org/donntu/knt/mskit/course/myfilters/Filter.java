@@ -36,8 +36,8 @@ public class Filter {
         double sumR = 0;
         double sumG = 0;
         double sumB = 0;
-        for (int k = i - radius, p = 0; k < i + radius; k++, p++) {
-            for (int l = j - radius, m = 0; l < j + radius; l++, m++) {
+        for (int k = i - radius, p = 0; k < i + radius + 1; k++, p++) {
+            for (int l = j - radius, m = 0; l < j + radius + 1; l++, m++) {
                 Color color = new Color(extendMatrix[k][l]);
                 sumR += (color.getRed() * blurMatrix[p][m]);
                 sumG += (color.getGreen() * blurMatrix[p][m]);
@@ -61,12 +61,14 @@ public class Filter {
             System.out.println();
         }
 
+        double sumNormal = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 blurMatrix[i][j] /= sum;
+                sumNormal += blurMatrix[i][j];
             }
         }
-
+        System.out.println("sum = " + sumNormal);
         return blurMatrix;
     }
 }

@@ -1,219 +1,53 @@
 package org.donntu.knt.mskit.course.myfilters;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * @author Shilenko Alexander
  */
 public class BMPWriter {
 
-    private final int BMP_WIDTH_OF_TIMES = 4;
-    private final int BYTE_PER_PIXEL = 3;
+    public void save(int[][] pixels, String filePath) {
+        try( LittleEndianDataOutput  out1 = new LittleEndianDataOutput(new FileOutputStream(filePath))) {
+            int height = pixels.length;
+            int width = pixels[0].length;
+            int rowSize = (width * 3 + 3) / 4 * 4;  // 3 bytes per pixel in RGB888, round up to multiple of 4
+            int imageSize = rowSize * height;
 
-    /**
-     * Android Bitmap Object to Window's v3 24bit Bmp Format File
-     * @param filePath
-     * @return file saved result
-     */
-    public boolean save(int[][] pixels, String filePath){
+            // BITMAPFILEHEADER
+            out1.writeBytes(new byte[]{'B', 'M'});  // FileType
+            out1.writeInt32(14 + 40 + imageSize);   // FileSize
+            out1.writeInt16(0);                     // Reserved1
+            out1.writeInt16(0);                     // Reserved2
+            out1.writeInt32(14 + 40);               // BitmapOffset
 
-        if(filePath == null){
-            return false;
-        }
+            // BITMAPINFOHEADER
+            out1.writeInt32(40);                        // Size
+            out1.writeInt32(width);                     // Width
+            out1.writeInt32(height);                    // Height
+            out1.writeInt16(1);                         // Planes
+            out1.writeInt16(24);                        // BitsPerPixel
+            out1.writeInt32(0);                         // Compression
+            out1.writeInt32(imageSize);                 // SizeOfBitmap
+            out1.writeInt32(0);  // HorzResolution
+            out1.writeInt32(0);    // VertResolution
+            out1.writeInt32(0);                         // ColorsUsed
+            out1.writeInt32(0);                         // ColorsImportant
 
-        boolean isSaveSuccess = true;
-
-        //image size
-        int height = pixels.length;
-        int width = pixels[0].length;
-
-        //image dummy data size
-        //reason : bmp file's width equals 4's multiple
-        int dummySize = 0;
-        byte[] dummyBytesPerRow = null;
-        boolean hasDummy = false;
-        if(isBmpWidth4Times(width)){
-            hasDummy = true;
-            dummySize = BMP_WIDTH_OF_TIMES - (width % BMP_WIDTH_OF_TIMES);
-            dummyBytesPerRow = new byte[dummySize * BYTE_PER_PIXEL];
-            for(int i = 0; i < dummyBytesPerRow.length; i++){
-                dummyBytesPerRow[i] = (byte)0xFF;
-            }
-        }
-
-        int[] pixelsVector = new int[width * height];
-        int imageSize = pixelsVector.length * BYTE_PER_PIXEL + (height * dummySize * BYTE_PER_PIXEL);
-        int imageDataOffset = 0x36;
-        int fileSize = imageSize + imageDataOffset;
-
-        //Android Bitmap Image Data
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                pixelsVector[j + i * width] = pixels[i][j];
-            }
-        }
-
-        //ByteArrayOutputStream baos = new ByteArrayOutputStream(fileSize);
-        ByteBuffer buffer = ByteBuffer.allocate(fileSize);
-
-        try {
-            /**
-             * BITMAP FILE HEADER Write Start
-             **/
-            buffer.put((byte)0x42);
-            buffer.put((byte)0x4D);
-
-            //size
-            buffer.put(writeInt(fileSize));
-
-            //reserved
-            buffer.put(writeShort((short)0));
-            buffer.put(writeShort((short)0));
-
-            //image data start offset
-            buffer.put(writeInt(imageDataOffset));
-
-            /** BITMAP FILE HEADER Write End */
-
-            //*******************************************
-
-            /** BITMAP INFO HEADER Write Start */
-            //size
-            buffer.put(writeInt(0x28));
-
-            //width, height
-            buffer.put(writeInt(width));
-            buffer.put(writeInt(height));
-
-            //planes
-            buffer.put(writeShort((short)1));
-
-            //bit count
-            buffer.put(writeShort((short)24));
-
-            //bit compression
-            buffer.put(writeInt(0));
-
-            //image data size
-            buffer.put(writeInt(imageSize));
-
-            //horizontal resolution in pixels per meter
-            buffer.put(writeInt(0));
-
-            //vertical resolution in pixels per meter (unreliable)
-            buffer.put(writeInt(0));
-
-            //컬러 사용 유무
-            buffer.put(writeInt(0));
-
-            //중요하게 사용하는 색
-            buffer.put(writeInt(0));
-
-            /** BITMAP INFO HEADER Write End */
-
-            int row = height;
-            int col = width;
-            int startPosition = 0;
-            int endPosition = 0;
-
-            while( row > 0 ){
-
-                startPosition = (row - 1) * col;
-                endPosition = row * col;
-
-                for(int i = startPosition; i < endPosition; i++ ){
-                    buffer.put(write24BitForPixcel(pixelsVector[i]));
-
-                    if(hasDummy){
-                        if(isBitmapWidthLastPixcel(width, i)){
-                            buffer.put(dummyBytesPerRow);
-                        }
-                    }
+            // Image data
+            byte[] row = new byte[rowSize];
+            for (int y = height - 1; y >= 0; y--) {
+                for (int x = 0; x < width; x++) {
+                    int color = pixels[y][x];
+                    row[x * 3] = (byte)(color);  // Blue
+                    row[x * 3 + 1] = (byte)(color >>>  8);  // Green
+                    row[x * 3 + 2] = (byte)(color >>> 16);  // Red
                 }
-                row--;
+                out1.writeBytes(row);
             }
-
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(buffer.array());
-            fos.close();
-
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            isSaveSuccess = false;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        finally{
-
-        }
-
-        return isSaveSuccess;
     }
 
-    /**
-     * Is last pixel in Android Bitmap width
-     * @param width
-     * @param i
-     * @return
-     */
-    private boolean isBitmapWidthLastPixcel(int width, int i) {
-        return i > 0 && (i % (width - 1)) == 0;
-    }
-
-    /**
-     * BMP file is a multiples of 4?
-     * @param width
-     * @return
-     */
-    private boolean isBmpWidth4Times(int width) {
-        return width % BMP_WIDTH_OF_TIMES > 0;
-    }
-
-    /**
-     * Write integer to little-endian
-     * @param value
-     * @return
-     * @throws IOException
-     */
-    private byte[] writeInt(int value) throws IOException {
-        byte[] b = new byte[4];
-
-        b[0] = (byte)(value & 0x000000FF);
-        b[1] = (byte)((value & 0x0000FF00) >> 8);
-        b[2] = (byte)((value & 0x00FF0000) >> 16);
-        b[3] = (byte)((value & 0xFF000000) >> 24);
-
-        return b;
-    }
-
-    /**
-     * Write integer pixel to little-endian byte array
-     * @param value
-     * @return
-     * @throws IOException
-     */
-    private byte[] write24BitForPixcel(int value) throws IOException {
-        byte[] b = new byte[3];
-
-        b[0] = (byte)(value & 0x000000FF);
-        b[1] = (byte)((value & 0x0000FF00) >> 8);
-        b[2] = (byte)((value & 0x00FF0000) >> 16);
-
-        return b;
-    }
-
-    /**
-     * Write short to little-endian byte array
-     * @param value
-     * @return
-     * @throws IOException
-     */
-    private byte[] writeShort(short value) throws IOException {
-        byte[] b = new byte[2];
-
-        b[0] = (byte)(value & 0x00FF);
-        b[1] = (byte)((value & 0xFF00) >> 8);
-
-        return b;
-    }
 }

@@ -1,8 +1,6 @@
 package org.donntu.knt.mskit.course.jpegreader.utils;
 
 
-import org.donntu.knt.mskit.course.jpegreader.Markers;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,10 +26,7 @@ public class BitInputStream {
             if (currentByte == 0xff) {
                 final int b2 = is.read();
                 if (b2 != 0) {
-                    if (b2 == Markers.EOI) {
-                        throw new IllegalStateException("end");
-                    }
-                    throw new IllegalStateException("should never happen");
+                    throw new IllegalStateException("end");
                 }
             }
         }

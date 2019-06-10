@@ -10,9 +10,9 @@ import java.util.Arrays;
 public class DCT {
 
     private static double[][] c;
-    private static double[][] temp = new double[ArraysUtil.SIZE][ArraysUtil.SIZE];
+    private static double[][] temp;
 
-    static  {
+    static {
         c = new double[ArraysUtil.SIZE][ArraysUtil.SIZE];
         temp = new double[ArraysUtil.SIZE][ArraysUtil.SIZE];
         init(c);
@@ -28,7 +28,7 @@ public class DCT {
         double temp1;
 
         for (int i = 0; i < ArraysUtil.SIZE; i++) {
-            for (int j=0; j < ArraysUtil.SIZE; j++) {
+            for (int j = 0; j < ArraysUtil.SIZE; j++) {
                 temp[i][j] = 0.0;
 
                 for (int k = 0; k < ArraysUtil.SIZE; k++) {
@@ -37,11 +37,11 @@ public class DCT {
             }
         }
 
-        for (int i=0; i<ArraysUtil.SIZE; i++) {
-            for (int j=0; j<ArraysUtil.SIZE; j++) {
+        for (int i = 0; i < ArraysUtil.SIZE; i++) {
+            for (int j = 0; j < ArraysUtil.SIZE; j++) {
                 temp1 = 0.0;
 
-                for (int k=0; k<ArraysUtil.SIZE; k++) {
+                for (int k = 0; k < ArraysUtil.SIZE; k++) {
                     temp1 += c[k][i] * temp[k][j];
                 }
 
@@ -61,9 +61,9 @@ public class DCT {
 
         for (int i = 1; i < ArraysUtil.SIZE; i++) {
             for (int j = 0; j < ArraysUtil.SIZE; j++) {
-                double jj = (double)j;
-                double ii = (double)i;
-                c[i][j]  = Math.sqrt(1.0 / 4.0) * Math.cos(((2.0 * jj + 1.0) * ii * Math.PI) / (16.0));
+                double jj = (double) j;
+                double ii = (double) i;
+                c[i][j] = Math.sqrt(1.0 / 4.0) * Math.cos(((2.0 * jj + 1.0) * ii * Math.PI) / (16.0));
             }
         }
     }
