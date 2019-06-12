@@ -1,5 +1,8 @@
 package org.donntu.knt.mskit.course.myfilters;
 
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -19,7 +22,7 @@ public class ImageUtils {
         return result;
     }
 
-    public static BufferedImage convertToBI(int[][] pixels) {
+    public static Image convertToImage(int[][] pixels) {
         int height = pixels.length;
         int width = pixels[0].length;
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -33,6 +36,6 @@ public class ImageUtils {
             }
         }
 
-        return bufferedImage;
+        return SwingFXUtils.toFXImage(bufferedImage, null);
     }
 }

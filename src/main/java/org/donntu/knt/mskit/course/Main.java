@@ -5,14 +5,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.donntu.knt.mskit.course.jpegreader.JpegDecoder;
-import org.donntu.knt.mskit.course.myfilters.BMPWriter;
-import org.donntu.knt.mskit.course.myfilters.Filter;
-import org.donntu.knt.mskit.course.myfilters.kernel.GaussianKernelValue;
-
-import java.io.File;
 
 public class Main extends Application {
     private static Stage currentStage = null;
@@ -28,11 +21,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         currentStage = primaryStage;
-        Parent root = FXMLLoader.load(getClass().getResource("/primary.fxml"));
-        primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/icon.png")));
+        Parent root = FXMLLoader.load(getClass().getResource("/home.fxml"));
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("МСКИТ");
-        primaryStage.setMaxWidth(800);
+        primaryStage.setMaxWidth(900);
         primaryStage.setResizable(false);
         primaryStage.show();
     }

@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
  */
 public class BMPWriter {
 
-    public void save(int[][] pixels, String filePath) {
+    public static void save(int[][] pixels, String filePath) {
         try (LittleEndianDataOutput out1 = new LittleEndianDataOutput(new FileOutputStream(filePath))) {
             int height = pixels.length;
             int width = pixels[0].length;

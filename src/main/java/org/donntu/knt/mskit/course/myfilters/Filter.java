@@ -56,19 +56,19 @@ public class Filter {
             for (int j = 0; j < size; j++) {
                 blurMatrix[i][j] = kernelValue.getValue(i - half, j - half);
                 sum += blurMatrix[i][j];
-                System.out.printf("%4.3f ", blurMatrix[i][j]);
+//                System.out.printf("%4.3f ", blurMatrix[i][j]);
             }
-            System.out.println();
+//            System.out.println();
         }
 
-        double sumNormal = 0;
+//        double sumNormal = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 blurMatrix[i][j] /= sum;
-                sumNormal += blurMatrix[i][j];
+//                sumNormal += blurMatrix[i][j];
             }
         }
-        System.out.println("sum = " + sumNormal);
+//        System.out.println("sum = " + sumNormal);
         return blurMatrix;
     }
 }

@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
 <AnchorPane prefHeight="588.0" prefWidth="858.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.donntu.knt.mskit.course.ui.controller.HomeController">
     <children>
         <TextField fx:id="filePathTextView" editable="false" layoutX="31.0" layoutY="26.0" prefHeight="30.0" prefWidth="657.0" promptText="Путь к файлу" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="25.0">
@@ -31,8 +28,10 @@
                 <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <ImageView fx:id="originalImageView" fitHeight="223.0" fitWidth="286.0" pickOnBounds="true" preserveRatio="true" smooth="false" GridPane.halignment="CENTER" />
-                <ImageView fx:id="processedImageView" fitHeight="259.0" fitWidth="286.0" pickOnBounds="true" preserveRatio="true" smooth="false" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+                <ImageView fx:id="originalImageView" fitHeight="260.0" fitWidth="300.0" pickOnBounds="true"
+                           preserveRatio="true" smooth="false" GridPane.halignment="CENTER"/>
+                <ImageView fx:id="processedImageView" fitHeight="260.0" fitWidth="300.0" pickOnBounds="true"
+                           preserveRatio="true" smooth="false" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
                 <Label text="Исходное изображение" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                     <font>
                         <Font size="18.0" />
@@ -94,9 +93,16 @@
                 </AnchorPane>
             </children>
         </HBox>
-        <Button fx:id="processButton" layoutX="403.0" layoutY="523.0" mnemonicParsing="false" text="Обработать" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
+        <Button fx:id="processButton" layoutX="403.0" layoutY="523.0" mnemonicParsing="false" prefHeight="39.0"
+                prefWidth="240.0" text="Обработать" AnchorPane.leftAnchor="170.0">
             <font>
-                <Font size="18.0" />
+                <Font size="18.0"/>
+            </font>
+        </Button>
+        <Button fx:id="saveButton" layoutX="448.0" layoutY="523.0" mnemonicParsing="false" prefHeight="39.0"
+                prefWidth="240.0" text="Сохранить" AnchorPane.rightAnchor="170.0">
+            <font>
+                <Font size="18.0"/>
             </font>
         </Button>
     </children>
