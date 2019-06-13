@@ -17,22 +17,69 @@ public class Filter {
         double[] blurKernel = getKernel(blurMatrixSize, kernelValue);
 
         int[][] extendMatrix = extendMatrix(pixels, radius);
-        for (int i = 0; i < normalHeight; i++) {
-            for (int j = 0; j < normalWidth; j++) {
-                for (int k = 0; k < 2; k++) {
-                    newPixels[i][j] = getBlurredPixel(
-                            extendMatrix,
-                            blurKernel,
-                            i + radius,
-                            j + radius,
-                            radius,
-                            k == 0
-                    );
-                }
+
+        /*processMatrix(extendMatrix, newPixels, blurKernel, radius,normalHeight,normalWidth, true);
+        processMatrix(extendMatrix, newPixels, blurKernel, radius,normalHeight,normalWidth, false);*/
+        for (int i = radius; i < normalHeight - radius; i++) {
+            for (int j = radius; j < normalWidth - radius; j++) {
+                newPixels[i - radius][j - radius] = getBlurredPixel(
+                        extendMatrix,
+                        blurKernel,
+                        i,
+                        j,
+                        radius,
+                        true
+                );
             }
         }
 
+        for (int i = radius; i < normalHeight - radius; i++) {
+            for (int j = radius; j < normalWidth - radius; j++) {
+                int blurredPixel = getBlurredPixel(
+                        extendMatrix,
+                        blurKernel,
+                        i,
+                        j,
+                        radius,
+                        true
+                );
+                newPixels[i - radius][j - radius] = sumPixelColors(blurredPixel, newPixels[i - radius][j - radius]);
+            }
+        }
         return newPixels;
+    }
+
+    private int sumPixelColors(int pixel1, int pixel2) {
+        Color pixel1Color = new Color(pixel1);
+        Color pixel2Color = new Color(pixel2);
+        return new Color(
+                (pixel1Color.getRed() + pixel2Color.getRed()) / 2,
+                (pixel1Color.getGreen() + pixel2Color.getGreen()) / 2,
+                (pixel1Color.getBlue() + pixel2Color.getBlue()) / 2
+                ).getRGB();
+    }
+
+    private int[][] getNewMatrixFromExtend(int[][] extendMatrix, int radius) {
+        int height = extendMatrix.length - (radius * 2);
+        int width = extendMatrix[0].length - (radius * 2);
+        int[][] newPixels = new int[height][width];
+        for (int i = 0; i < height; i++) {
+            System.arraycopy(extendMatrix[i + radius], radius, newPixels[i], 0, width);
+        }
+
+
+        return newPixels;
+    }
+
+    private void processMatrix(
+            int[][] extendMatrix,
+            int [][] newPixels,
+            double[] blurKernel,
+            int radius,
+            int normalHeight,
+            int normalWidth,
+            boolean vertical) {
+
     }
 
     private int getBlurredPixel(int[][] extendMatrix, double[] blurKernel, int i, int j, int radius, boolean vertical) {
