@@ -1,5 +1,5 @@
-import org.donntu.knt.mskit.course.myfilters.Filter;
-import org.donntu.knt.mskit.course.myfilters.kernel.GaussianKernelValue;
+import org.donntu.knt.mskit.course.image.Filter;
+import org.donntu.knt.mskit.course.image.kernel.GaussianKernelValue;
 import org.junit.Test;
 
 /**

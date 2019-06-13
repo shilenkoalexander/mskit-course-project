@@ -12,7 +12,7 @@ import org.donntu.knt.mskit.course.ui.model.ImageModel;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
-import static org.donntu.knt.mskit.course.myfilters.ImageUtils.convertToImage;
+import static org.donntu.knt.mskit.course.image.ImageUtils.convertToImage;
 
 public class HomeController {
     private ImageModel model = new ImageModel();

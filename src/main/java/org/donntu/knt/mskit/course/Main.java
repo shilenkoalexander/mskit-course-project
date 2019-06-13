@@ -28,22 +28,4 @@ public class Main extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-
-   /* public static void main(String[] args) throws Exception {
-        System.out.println("Starting...");
-        int[][] pixels = JpegDecoder.decode(new File("files/cat.jpg").toPath());
-        System.out.println("Decoded");
-
-        Filter filter = new Filter();
-        int radius = 5;
-        double sigma = 3;
-
-        int[][] blurred = filter.process(pixels, radius, new GaussianKernelValue(sigma));
-
-        System.out.println("Blurred");
-        BMPWriter bmpWriter = new BMPWriter();
-        bmpWriter.save(blurred,"files/blurred.bmp");
-        System.out.println("Saved");
-    }*/
-
 }

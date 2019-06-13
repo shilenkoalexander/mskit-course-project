@@ -4,16 +4,16 @@ import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.donntu.knt.mskit.course.Main;
-import org.donntu.knt.mskit.course.jpegreader.JpegDecoder;
-import org.donntu.knt.mskit.course.myfilters.BMPWriter;
-import org.donntu.knt.mskit.course.myfilters.Filter;
-import org.donntu.knt.mskit.course.myfilters.kernel.GaussianKernelValue;
-import org.donntu.knt.mskit.course.myfilters.kernel.SmoothKernelValue;
+import org.donntu.knt.mskit.course.image.BMPWriter;
+import org.donntu.knt.mskit.course.image.Filter;
+import org.donntu.knt.mskit.course.image.jpegreader.JpegDecoder;
+import org.donntu.knt.mskit.course.image.kernel.GaussianKernelValue;
+import org.donntu.knt.mskit.course.image.kernel.SmoothKernelValue;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.donntu.knt.mskit.course.myfilters.ImageUtils.convertToImage;
+import static org.donntu.knt.mskit.course.image.ImageUtils.convertToImage;
 
 /**
  * @author Shilenko Alexander
